@@ -1,177 +1,258 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 html,
 body {
-    height: 100%;
-    width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
+/* THEMES */
 :root {
-    --bg-color: #000000;
-    --bg-button-color: #1a1a1a;
-    --bg-task-color: #2a2a2a;
-    --primary-text-color: #f4f4f4;
-    --delete-color: #ff4d4d;
-
-    /* Padding variable */
-    --nav-padding: 15px 30px;
-    --section-padding: 15px 30px;
-    --padding-s: 5px;
-    --padding-m: 10px;
-    --padding-l: 15px;
-    --padding-xl: 20px;
-    --padding-xxl: 30px;
-
-    /* Border-radius variable */
-    --border-radius-s: 5px;
-    --border-radius-m: 10px;
-    --border-radius-l: 15px;
-    --border-radius-xl: 20px;
-    --border-radius-xxl: 30px;
+  --bg: #0f0f0f;
+  --text: #ffffff;
+  --card: #1a1a1a;
+  --column-bg: #171717;
+  --accent: #3a5cff;
+  --delete: #ff4d4d;
 }
 
+.light {
+  --bg: #f2f2f2;
+  --text: #000;
+  --card: #ffffff;
+  --column-bg: #ffffff;
+}
+
+/* BODY */
 body {
-    background-color: var(--bg-color);
-    color: var(--primary-text-color);
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-main {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
+/* NAV */
 nav {
-    padding: var(--nav-padding);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+nav .nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  background: rgba(255, 255, 255, 0.03);
+  -webkit-backdrop-filter: blur(16px);
+          backdrop-filter: blur(16px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+nav .nav-actions input,
+nav .nav-actions select {
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font-size: 0.9rem;
+  outline: none;
+  transition: 0.25s ease;
+}
+nav .nav-actions input:focus,
+nav .nav-actions select:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 2px rgba(97, 112, 183, 0.25);
+}
+nav .nav-actions select {
+  cursor: pointer;
+}
+nav .nav-actions button {
+  padding: 0.55rem 0.9rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  transition: 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+nav .nav-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(58, 92, 255, 0.4);
+}
+nav .nav-actions button:active {
+  transform: scale(0.97);
+}
+nav .nav-actions #theme-toggle, nav .nav-actions .toggle-modal {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  font-size: 1.1rem;
+  gap: 10px;
+}
+nav .nav-actions #theme-toggle:hover, nav .nav-actions .toggle-modal:hover {
+  box-shadow: rgba(255, 255, 255, 0.12);
+}
+nav .nav-actions .icon-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  transition: 0.25s ease;
+}
+nav .nav-actions .icon-btn i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+nav .nav-actions .icon-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+nav .nav-actions .add-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.55rem 1.2rem;
+  height: 42px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+nav .nav-actions .add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(58, 92, 255, 0.35);
+  background: lighten var(--accent), 5%;
+}
+nav .nav-actions .add-btn:active {
+  transform: scale(0.97);
 }
 
-nav button {
-    background-color: var(--bg-button-color);
-    border: none;
-    outline: none;
-    color: var(--primary-text-color);
-    padding: var(--padding-m) var(--padding-l);
-    cursor: pointer;
-    border-radius: var(--border-radius-m);
+/* BOARD */
+.board {
+  display: flex;
+  gap: 20px;
+  padding: 20px 30px;
+  flex-grow: 1;
 }
 
-section {
-    display: flex;
-    flex-grow: 1;
-    padding: var(--section-padding);
-    display: flex;
-    justify-content: space-between;
-    gap: var(--border-radius-xxl);
+.task-column {
+  background: var(--column-bg);
+  flex-grow: 1;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: 0.4s;
+}
+.task-column.hover-over {
+  border: 2px dashed var(--accent);
+  scale: 1.03;
 }
 
-section .task-column {
-    background-color: var(--bg-button-color);
-    flex-grow: 1;
-    padding: var(--padding-m);
-    display: flex;
-    flex-direction: column;
-    gap: var(--padding-m);
-    border-radius: var(--border-radius-m);
-    transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+/* TASK CARD */
+.task {
+  background: var(--card);
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: grab;
+  transition: 0.2s ease;
+}
+.task:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.4);
+}
+.task .priority {
+  font-size: 14px;
+  opacity: 0.8;
+}
+.task button.delete {
+  background: var(--delete);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  align-self: flex-end;
+  cursor: pointer;
 }
 
-section .task-column.hover-over {
-    border: 2px dashed var(--primary-text-color);
-    scale: 1.05;
-
-}
-
-section .task-column .heading {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-section .task-column .task {
-    background-color: var(--bg-task-color);
-    padding: var(--padding-m);
-    border-radius: var(--border-radius-m);
-    display: flex;
-    flex-direction: column;
-    gap: var(--padding-s);
-    cursor: grab;
-    /* border-radius: var(--border-radius-m) ; */
-}
-
-section .task-column .task button {
-    align-self: flex-end;
-    cursor: pointer;
-    padding: var(--padding-s) var(--padding-m);
-    border-radius: var(--border-radius-s);
-    border: none;
-    outline: none;
-    background-color: var(--delete-color);
-    color: var(--primary-text-color);
-}
-
-/* modal styles */
-
+/* MODAL */
 .modal {
-    position: fixed;
-    height: 100vh;
-    width: 100vw;
-    top: 0;
-    left: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
+  position: fixed;
+  display: none;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
 }
-
 .modal.active {
-    display: flex;
+  display: flex;
 }
-
-
 .modal .bg {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(61, 61, 61, 0.404);
-    backdrop-filter: blur(5px);
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
 }
-
 .modal .center {
-    background-color: var(--bg-button-color);
-    padding: var(--border-radius-xxl);
-    border-radius: var(--border-radius-m);
-    display: flex;
-    flex-direction: column;
-    gap: var(--padding-m);
-    z-index: 10;
+  background: var(--card);
+  padding: 30px;
+  border-radius: 12px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 320px;
+}
+.modal input,
+.modal textarea,
+.modal select {
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--column-bg);
+  border: none;
+  color: var(--text);
 }
 
-.modal .center input,
-.modal .center textarea,
-.modal .center select {
-    background-color: var(--bg-task-color);
-    border: none;
-    outline: none;
-    color: var(--primary-text-color);
-    padding: var(--padding-m);
-    border-radius: var(--border-radius-s);
-}
-
-.modal .center button {
-    background-color: var(--bg-task-color);
-    border: none;
-    outline: none;
-    color: var(--primary-text-color);
-    padding: var(--padding-m) var(--padding-l);
-    cursor: pointer;
-    border-radius: var(--border-radius-m);
-    width: fit-content;
-    align-self: center;
-}
+.add-task-btn {
+  background: var(--accent);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}/*# sourceMappingURL=style.css.map */

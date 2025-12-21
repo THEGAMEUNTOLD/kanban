@@ -1,169 +1,141 @@
-let tasksData = {};
+let tasksData = JSON.parse(localStorage.getItem("tasks")) || {
+    todo: [],
+    progress: [],
+    done: []
+};
 
 const todo = document.querySelector("#todo");
 const progress = document.querySelector("#progress");
 const done = document.querySelector("#done");
-
-let dragelement = null;
-
-function addTask(title, desc, column) {
-    const div = document.createElement("div")
-
-    div.classList.add("task")
-    div.setAttribute("draggable", "true")
-
-    div.innerHTML = `
-        <h2>${taskTitle}</h2>
-        <p>${taskDesc}</p>
-        <button>Delete</button>
-    `;
-
-    column.addEventListener('drag', (e) =>{
-        dragelement = div
-    })
-
-    return div;
-}
-
 const columns = [todo, progress, done];
 
+let dragElement = null;
 
-// ---------------- LOAD FROM LOCAL STORAGE ----------------
-if (localStorage.getItem("tasks")) {
-    tasksData = JSON.parse(localStorage.getItem("tasks"));
+// ---------- RENDER TASKS ----------
+function renderTasks() {
+    columns.forEach(col => col.querySelectorAll(".task").forEach(t => t.remove()));
 
     for (const col in tasksData) {
         const column = document.querySelector(`#${col}`);
 
         tasksData[col].forEach(task => {
             const div = document.createElement("div");
-
             div.classList.add("task");
             div.setAttribute("draggable", "true");
 
             div.innerHTML = `
-                <h2>${task.title}</h2>
-                <p>${task.ddesc}</p>
-                <button>Delete</button>
+                <h3>${task.title}</h3>
+                <p>${task.desc}</p>
+                <p class="priority">Priority: ${task.priority}</p>
+                <p class="priority">Due: ${task.date || "None"}</p>
+                <button class="delete">Delete</button>
             `;
 
-            column.appendChild(div);
+            // DRAG
+            div.addEventListener("drag", () => dragElement = div);
 
-            // make draggable
-            div.addEventListener("drag", () => {
-                dragelement = div;
+            // DELETE
+            div.querySelector(".delete").addEventListener("click", () => {
+                tasksData[col] = tasksData[col].filter(t => t !== task);
+                save();
+                renderTasks();
             });
+
+            column.appendChild(div);
         });
     }
 
-    // update counts
-    columns.forEach(col => {
-        const tasks = col.querySelectorAll(".task");
-        const count = col.querySelector(".right");
-        count.innerText = tasks.length;
+    updateCounts();
+}
+
+// ---------- COUNTS ----------
+function updateCounts() {
+    document.querySelectorAll(".count").forEach((c, i) => {
+        c.innerText = columns[i].querySelectorAll(".task").length;
     });
 }
 
-
-// --------------- MAKE INITIAL TASKS DRAGGABLE ---------------
-document.querySelectorAll(".task").forEach(task => {
-    task.addEventListener("drag", () => {
-        dragelement = task;
-    });
-});
-
-
-// ---------------- DRAG + DROP SYSTEM ----------------
-function addDragEventsOnColumn(column) {
-    column.addEventListener("dragenter", e => {
-        e.preventDefault();
-        column.classList.add("hover-over");
-    });
-
-    column.addEventListener("dragleave", e => {
-        e.preventDefault();
-        column.classList.remove("hover-over");
-    });
-
-    column.addEventListener("dragover", e => {
-        e.preventDefault();
-    });
-
-    column.addEventListener("drop", e => {
-        e.preventDefault();
-
-        if (dragelement) {
-            column.appendChild(dragelement);
-        }
-
-        column.classList.remove("hover-over");
-
-        // Update tasks + counts + save
-        updateTasksAndSave();
-    });
-}
-
-addDragEventsOnColumn(todo);
-addDragEventsOnColumn(progress);
-addDragEventsOnColumn(done);
-
-
-// ---------------- UPDATE + SAVE TO LOCALSTORAGE ----------------
-function updateTasksAndSave() {
-    columns.forEach(col => {
-        const tasks = col.querySelectorAll(".task");
-        const count = col.querySelector(".right");
-
-        tasksData[col.id] = [...tasks].map(t => ({
-            title: t.querySelector("h2").innerText,
-            ddesc: t.querySelector("p").innerText
-        }));
-
-        count.innerText = tasks.length;
-    });
-
+// ---------- SAVE ----------
+function save() {
     localStorage.setItem("tasks", JSON.stringify(tasksData));
 }
 
+// ---------- DRAG EVENTS ----------
+function enableColumnDrag(column) {
+    column.addEventListener("dragover", e => e.preventDefault());
 
+    column.addEventListener("drop", () => {
+        if (!dragElement) return;
 
-// ---------------- ADD NEW TASK ----------------
-const toggleModalButton = document.querySelector("#toggle-modal");
-const modalBg = document.querySelector(".modal .bg");
-const modal = document.querySelector(".modal");
-const addTaskButton = document.querySelector("#add-new-task");
+        const fromCol = dragElement.parentElement.id;
+        const toCol = column.id;
 
-toggleModalButton.addEventListener("click", () => {
-    modal.classList.toggle("active");
-});
+        const title = dragElement.querySelector("h3").innerText;
+        const desc = dragElement.querySelector("p").innerText;
 
-modalBg.addEventListener("click", () => {
-    modal.classList.remove("active");
-});
+        const task = tasksData[fromCol].find(t => t.title === title);
+        tasksData[fromCol] = tasksData[fromCol].filter(t => t !== task);
+        tasksData[toCol].push(task);
 
-addTaskButton.addEventListener("click", () => {
-    const taskTitle = document.querySelector("#task-title-input").value;
-    const taskDesc = document.querySelector("#task-desc-input").value;
-
-    if (!taskTitle.trim()) return;
-
-    const div = document.createElement("div");
-    div.classList.add("task");
-    div.setAttribute("draggable", "true");
-
-    div.innerHTML = `
-        <h2>${taskTitle}</h2>
-        <p>${taskDesc}</p>
-        <button>Delete</button>
-    `;
-
-    todo.appendChild(div);
-
-    div.addEventListener("drag", () => {
-        dragelement = div;
+        save();
+        renderTasks();
     });
+}
 
-    updateTasksAndSave();
+enableColumnDrag(todo);
+enableColumnDrag(progress);
+enableColumnDrag(done);
 
-    modal.classList.remove("active");
+// ---------- ADD TASK ----------
+document.querySelector("#add-new-task").addEventListener("click", () => {
+    const title = document.querySelector("#task-title-input").value.trim();
+    const desc = document.querySelector("#task-desc-input").value.trim();
+    const priority = document.querySelector("#task-priority").value;
+    const date = document.querySelector("#task-date").value;
+
+    if (!title) return;
+
+    tasksData.todo.push({ title, desc, priority, date });
+
+    save();
+    renderTasks();
+
+    document.querySelector(".modal").classList.remove("active");
 });
+
+// ---------- SEARCH ----------
+document.querySelector("#search-input").addEventListener("input", e => {
+    const keyword = e.target.value.toLowerCase();
+
+    document.querySelectorAll(".task").forEach(task => {
+        const text = task.innerText.toLowerCase();
+        task.style.display = text.includes(keyword) ? "block" : "none";
+    });
+});
+
+// ---------- PRIORITY FILTER ----------
+document.querySelector("#priority-filter").addEventListener("change", e => {
+    const value = e.target.value;
+
+    document.querySelectorAll(".task").forEach(task => {
+        const pri = task.querySelector(".priority").innerText.includes(value);
+        task.style.display = value === "" || pri ? "block" : "none";
+    });
+});
+
+// ---------- THEME TOGGLE ----------
+document.querySelector("#theme-toggle").addEventListener("click", () => {
+    document.body.classList.toggle("light");
+});
+
+// ---------- MODAL ----------
+document.querySelector("#toggle-modal").addEventListener("click", () => {
+    document.querySelector(".modal").classList.add("active");
+});
+
+document.querySelector(".modal .bg").addEventListener("click", () => {
+    document.querySelector(".modal").classList.remove("active");
+});
+
+// ---------- FIRST LOAD ----------
+renderTasks();
