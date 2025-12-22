@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,81 +7,76 @@
     <link rel="stylesheet" href="style.css" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
 </head>
-
 <body>
     <main>
-       <nav class="navbar">
-    <div class="brand">KANBAN PRO</div>
+        <nav class="navbar">
+            <div class="brand">Productive.io</div>
 
-    <div class="nav-center">
-        <div class="search-box">
-            <input type="text" placeholder="Search tasks..." id="search-input">
-            <i class="ri-search-line"></i>
-        </div>
+            <div class="nav-center">
+                <div class="search-box">
+                    <input type="text" placeholder="Search tasks..." id="search-input">
+                    <i class="ri-search-line"></i>
+                </div>
+                <select id="priority-filter" class="priority-select">
+                    <option value="">All Priorities</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
 
-        <select id="priority-filter" class="priority-select">
-            <option value="">All Priorities</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-        </select>
-    </div>
-
-    <div class="nav-right">
-        <button id="theme-toggle" class="icon-btn"><i class="ri-moon-fill"></i></button>
-        <button id="toggle-modal" class="add-btn">+ Add Task</button>
-    </div>
-</nav>
+            <div class="nav-right">
+                <button id="theme-toggle" class="icon-btn"><i class="ri-moon-fill"></i></button>
+                <button id="toggle-modal" class="add-btn">+ Add Task</button>
+            </div>
+        </nav>
 
         <section class="board">
-            <div id="todo" class="task-column">
+            <div id="todo-column" class="task-column">
                 <div class="heading">
-                    <div class="left">To Do</div>
-                    <div class="right count">0</div>
+                    <div class="title"><i class="ri-checkbox-blank-circle-line"></i><span>To Do</span></div>
+                    <div class="task-count">0</div>
                 </div>
+                <div class="tasks"></div>
             </div>
 
-            <div id="progress" class="task-column">
+            <div id="inprogress-column" class="task-column">
                 <div class="heading">
-                    <div class="left">In Progress</div>
-                    <div class="right count">0</div>
+                    <div class="title"><i class="ri-loader-4-line"></i><span>In Progress</span></div>
+                    <div class="task-count">0</div>
                 </div>
+                <div class="tasks"></div>
             </div>
 
-            <div id="done" class="task-column">
+            <div id="done-column" class="task-column">
                 <div class="heading">
-                    <div class="left">Done</div>
-                    <div class="right count">0</div>
+                    <div class="title"><i class="ri-check-double-line"></i><span>Done</span></div>
+                    <div class="task-count">0</div>
                 </div>
+                <div class="tasks"></div>
             </div>
         </section>
     </main>
 
-    <!-- MODAL -->
-    <div class="modal add-new-task">
-        <div class="bg"></div>
-
-        <div class="center">
+    <div class="modal" id="addTaskModal">
+        <div class="modal-bg"></div>
+        <div class="modal-content">
             <h2>Add New Task</h2>
-
-            <input type="text" id="task-title-input" placeholder="Task Title" />
-
-            <textarea id="task-desc-input" placeholder="Task Description"></textarea>
-
-            <select id="task-priority">
-                <option value="">Select Priority</option>
-                <option value="Low">🟢 Low</option>
-                <option value="Medium">🟡 Medium</option>
-                <option value="High">🔴 High</option>
-            </select>
-
-            <input type="date" id="task-date" />
-
+            <div class="field"><input type="text" id="task-title-input" placeholder="Task Title" /></div>
+            <div class="field"><textarea id="task-desc-input" placeholder="Task Description"></textarea></div>
+            <div class="field">
+                <select id="task-priority">
+                    <option value="">Select Priority</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+            <div class="field"><input type="date" id="task-date" /></div>
             <button id="add-new-task" class="add-task-btn">Add Task</button>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
-
 </html>

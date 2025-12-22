@@ -1,141 +1,124 @@
-let tasksData = JSON.parse(localStorage.getItem("tasks")) || {
-    todo: [],
-    progress: [],
-    done: []
+// DOM ELEMENTS
+const modal = document.getElementById("addTaskModal");
+const toggleModalBtn = document.getElementById("toggle-modal");
+const addTaskBtn = document.getElementById("add-new-task");
+const themeToggle = document.getElementById("theme-toggle");
+const searchInput = document.getElementById("search-input");
+const priorityFilter = document.getElementById("priority-filter");
+
+const titleInput = document.getElementById("task-title-input");
+const descInput = document.getElementById("task-desc-input");
+const priorityInput = document.getElementById("task-priority");
+const dateInput = document.getElementById("task-date");
+
+const columns = {
+    todo: document.querySelector("#todo-column .tasks"),
+    progress: document.querySelector("#inprogress-column .tasks"),
+    done: document.querySelector("#done-column .tasks"),
 };
 
-const todo = document.querySelector("#todo");
-const progress = document.querySelector("#progress");
-const done = document.querySelector("#done");
-const columns = [todo, progress, done];
+// MODAL
+toggleModalBtn.addEventListener("click", () => modal.classList.add("active"));
+modal.addEventListener("click", e => { if (e.target.classList.contains("modal-bg")) modal.classList.remove("active"); });
 
-let dragElement = null;
+// TASK STORAGE
+const saveTasks = () => {
+    const data = { todo: columns.todo.innerHTML, progress: columns.progress.innerHTML, done: columns.done.innerHTML };
+    localStorage.setItem("kanbanTasks", JSON.stringify(data));
+};
 
-// ---------- RENDER TASKS ----------
-function renderTasks() {
-    columns.forEach(col => col.querySelectorAll(".task").forEach(t => t.remove()));
+const loadTasks = () => {
+    const data = JSON.parse(localStorage.getItem("kanbanTasks"));
+    if (!data) return;
+    columns.todo.innerHTML = data.todo;
+    columns.progress.innerHTML = data.progress;
+    columns.done.innerHTML = data.done;
+    reloadDragEvents();
+    updateAllCounts();
+};
+loadTasks();
 
-    for (const col in tasksData) {
-        const column = document.querySelector(`#${col}`);
+// CREATE TASK
+function createTask(title, desc, priority, date, column = "todo") {
+    const task = document.createElement("div");
+    task.classList.add("task-card");
+    task.setAttribute("draggable", "true");
+    task.dataset.priority = priority;
 
-        tasksData[col].forEach(task => {
-            const div = document.createElement("div");
-            div.classList.add("task");
-            div.setAttribute("draggable", "true");
+    task.innerHTML = `
+        <div class="task-top">
+            <h3>${title}</h3>
+            <span class="priority ${priority.toLowerCase()}">${priority}</span>
+        </div>
+        <p class="task-desc">${desc}</p>
+        <div class="task-bottom">
+            <span class="date"><i class="ri-calendar-line"></i> ${date}</span>
+            <button class="delete-btn"><i class="ri-delete-bin-6-line"></i></button>
+        </div>
+    `;
+    columns[column].appendChild(task);
 
-            div.innerHTML = `
-                <h3>${task.title}</h3>
-                <p>${task.desc}</p>
-                <p class="priority">Priority: ${task.priority}</p>
-                <p class="priority">Due: ${task.date || "None"}</p>
-                <button class="delete">Delete</button>
-            `;
-
-            // DRAG
-            div.addEventListener("drag", () => dragElement = div);
-
-            // DELETE
-            div.querySelector(".delete").addEventListener("click", () => {
-                tasksData[col] = tasksData[col].filter(t => t !== task);
-                save();
-                renderTasks();
-            });
-
-            column.appendChild(div);
-        });
-    }
-
-    updateCounts();
-}
-
-// ---------- COUNTS ----------
-function updateCounts() {
-    document.querySelectorAll(".count").forEach((c, i) => {
-        c.innerText = columns[i].querySelectorAll(".task").length;
+    task.querySelector(".delete-btn").addEventListener("click", () => {
+        task.remove(); saveTasks(); updateAllCounts();
     });
+    enableDrag(task); saveTasks(); updateAllCounts();
 }
 
-// ---------- SAVE ----------
-function save() {
-    localStorage.setItem("tasks", JSON.stringify(tasksData));
-}
-
-// ---------- DRAG EVENTS ----------
-function enableColumnDrag(column) {
-    column.addEventListener("dragover", e => e.preventDefault());
-
-    column.addEventListener("drop", () => {
-        if (!dragElement) return;
-
-        const fromCol = dragElement.parentElement.id;
-        const toCol = column.id;
-
-        const title = dragElement.querySelector("h3").innerText;
-        const desc = dragElement.querySelector("p").innerText;
-
-        const task = tasksData[fromCol].find(t => t.title === title);
-        tasksData[fromCol] = tasksData[fromCol].filter(t => t !== task);
-        tasksData[toCol].push(task);
-
-        save();
-        renderTasks();
-    });
-}
-
-enableColumnDrag(todo);
-enableColumnDrag(progress);
-enableColumnDrag(done);
-
-// ---------- ADD TASK ----------
-document.querySelector("#add-new-task").addEventListener("click", () => {
-    const title = document.querySelector("#task-title-input").value.trim();
-    const desc = document.querySelector("#task-desc-input").value.trim();
-    const priority = document.querySelector("#task-priority").value;
-    const date = document.querySelector("#task-date").value;
-
-    if (!title) return;
-
-    tasksData.todo.push({ title, desc, priority, date });
-
-    save();
-    renderTasks();
-
-    document.querySelector(".modal").classList.remove("active");
+// ADD TASK BTN
+addTaskBtn.addEventListener("click", () => {
+    const title = titleInput.value.trim();
+    const desc = descInput.value.trim();
+    const priority = priorityInput.value;
+    const date = dateInput.value;
+    if (!title || !priority || !date) { alert("Please fill all required fields!"); return; }
+    createTask(title, desc, priority, date);
+    modal.classList.remove("active");
+    titleInput.value = ""; descInput.value = ""; priorityInput.value = ""; dateInput.value = "";
 });
 
-// ---------- SEARCH ----------
-document.querySelector("#search-input").addEventListener("input", e => {
-    const keyword = e.target.value.toLowerCase();
-
-    document.querySelectorAll(".task").forEach(task => {
-        const text = task.innerText.toLowerCase();
-        task.style.display = text.includes(keyword) ? "block" : "none";
+// DRAG & DROP
+function enableDrag(task) {
+    task.addEventListener("dragstart", () => task.classList.add("dragging"));
+    task.addEventListener("dragend", () => { task.classList.remove("dragging"); saveTasks(); updateAllCounts(); });
+}
+function reloadDragEvents() { document.querySelectorAll(".task-card").forEach(enableDrag); }
+document.querySelectorAll(".tasks").forEach(col => {
+    col.addEventListener("dragover", e => {
+        e.preventDefault();
+        const dragging = document.querySelector(".dragging");
+        if (dragging) col.appendChild(dragging);
     });
 });
 
-// ---------- PRIORITY FILTER ----------
-document.querySelector("#priority-filter").addEventListener("change", e => {
-    const value = e.target.value;
-
-    document.querySelectorAll(".task").forEach(task => {
-        const pri = task.querySelector(".priority").innerText.includes(value);
-        task.style.display = value === "" || pri ? "block" : "none";
+// SEARCH
+searchInput.addEventListener("input", () => {
+    const val = searchInput.value.toLowerCase();
+    document.querySelectorAll(".task-card").forEach(task => {
+        const title = task.querySelector("h3").innerText.toLowerCase();
+        task.style.display = title.includes(val) ? "block" : "none";
     });
 });
 
-// ---------- THEME TOGGLE ----------
-document.querySelector("#theme-toggle").addEventListener("click", () => {
+// PRIORITY FILTER
+priorityFilter.addEventListener("change", () => {
+    const filter = priorityFilter.value;
+    document.querySelectorAll(".task-card").forEach(task => {
+        const priority = task.dataset.priority;
+        task.style.display = (filter === "" || filter === priority) ? "block" : "none";
+    });
+});
+
+// THEME TOGGLE
+themeToggle.addEventListener("click", () => {
     document.body.classList.toggle("light");
+    themeToggle.innerHTML = document.body.classList.contains("light")
+        ? '<i class="ri-sun-fill"></i>'
+        : '<i class="ri-moon-fill"></i>';
 });
 
-// ---------- MODAL ----------
-document.querySelector("#toggle-modal").addEventListener("click", () => {
-    document.querySelector(".modal").classList.add("active");
-});
-
-document.querySelector(".modal .bg").addEventListener("click", () => {
-    document.querySelector(".modal").classList.remove("active");
-});
-
-// ---------- FIRST LOAD ----------
-renderTasks();
+// UPDATE COUNTS
+function updateAllCounts() {
+    document.querySelectorAll(".task-column").forEach(col => {
+        col.querySelector(".task-count").innerText = col.querySelectorAll(".task-card").length;
+    });
+}
