@@ -11,30 +11,28 @@
 
 <body>
     <main>
-        <nav>
-            <div class="left">KANBAN PRO</div>
+       <nav class="navbar">
+    <div class="brand">KANBAN PRO</div>
 
-            <div class="nav-actions classy-nav">
-                <div class="left-section">
-                    <div class="search-box">
-                        <input type="text" id="search-input" placeholder="Search tasks..." />
-                        <span class="icon"><i class="ri-search-line"></i></span>
-                    </div>
+    <div class="nav-center">
+        <div class="search-box">
+            <input type="text" placeholder="Search tasks..." id="search-input">
+            <i class="ri-search-line"></i>
+        </div>
 
-                    <select id="priority-filter" class="select-classic">
-                        <option value="">All Priorities</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                    </select>
-                </div>
+        <select id="priority-filter" class="priority-select">
+            <option value="">All Priorities</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+    </div>
 
-                <div class="right-section">
-                    <button id="theme-toggle" class="icon-btn"><i class="ri-moon-fill"></i></button>
-                    <button id="toggle-modal" class="add-btn">+ Add Task</button>
-                </div>
-            </div>
-        </nav>
+    <div class="nav-right">
+        <button id="theme-toggle" class="icon-btn"><i class="ri-moon-fill"></i></button>
+        <button id="toggle-modal" class="add-btn">+ Add Task</button>
+    </div>
+</nav>
 
         <section class="board">
             <div id="todo" class="task-column">
