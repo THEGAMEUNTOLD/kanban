@@ -27,6 +27,18 @@ const saveTasks = () => {
     localStorage.setItem("kanbanTasks", JSON.stringify(data));
 };
 
+function enableDelete(task) {
+    const del = task.querySelector(".delete-btn");
+    if (!del) return;
+
+    del.addEventListener("click", () => {
+        task.remove();
+        saveTasks();
+        updateAllCounts();
+    });
+}
+
+
 const loadTasks = () => {
     const data = JSON.parse(localStorage.getItem("kanbanTasks"));
     if (!data) return;
