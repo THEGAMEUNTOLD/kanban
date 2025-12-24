@@ -5,9 +5,8 @@ const addTaskBtn = document.getElementById("add-new-task");
 const themeToggle = document.getElementById("theme-toggle");
 const searchInput = document.getElementById("search-input");
 const priorityFilter = document.getElementById("priority-filter");
-
 const titleInput = document.getElementById("task-title-input");
-const descInput = document.getElementById("task-desc-input");
+const descInput = document.getElementById("task-desc-input"); 
 const priorityInput = document.getElementById("task-priority");
 const dateInput = document.getElementById("task-date");
 
