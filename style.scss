@@ -10,9 +10,7 @@ body {
   height: 100%;
 }
 
-/* ----------------------------------
-   THEME VARIABLES
------------------------------------ */
+
 :root {
   --bg: #0f0f0f;
   --text: #ffffff;
@@ -36,9 +34,7 @@ body.light {
   --input-bg: #f0f0f0;
 }
 
-/* ----------------------------------
-   GLOBAL BODY
------------------------------------ */
+
 body {
   height: 100vh;
   display: flex;
@@ -49,9 +45,7 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
-/* ----------------------------------
-   NAVBAR
------------------------------------ */
+
 .navbar {
   width: 100%;
   display: flex;
@@ -336,7 +330,6 @@ body {
         transition: 0.2s;
       }
     }
-    
   }
 }
 
